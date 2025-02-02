@@ -7,7 +7,6 @@ from src.libs.resume_and_cover_builder.llm.llm_generate_resume import LLMResumer
 from src.libs.resume_and_cover_builder.utils import LoggerChatModel
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 from loguru import logger
 from pathlib import Path
@@ -35,7 +34,7 @@ class LLMResumeJobDescription(LLMResumer):
         chain = prompt | self.llm_cheap | StrOutputParser()
         output = chain.invoke({"text": job_description_text})
         self.job_description = output
-    
+
     def generate_header(self) -> str:
         """
         Generate the header section of the resume.

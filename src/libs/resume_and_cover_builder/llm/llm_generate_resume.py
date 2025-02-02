@@ -7,11 +7,13 @@ import textwrap
 from src.libs.resume_and_cover_builder.utils import LoggerChatModel
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
 from dotenv import load_dotenv
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from loguru import logger
 from pathlib import Path
+
+from src.utils.constants import LLM_MODEL
 
 # Load environment variables from .env file
 load_dotenv()
@@ -24,10 +26,10 @@ log_path = Path(log_folder).resolve()
 logger.add(log_path / "gpt_resume.log", rotation="1 day", compression="zip", retention="7 days", level="DEBUG")
 
 class LLMResumer:
-    def __init__(self, openai_api_key, strings):
+    def __init__(self, claude_api_key, strings):
         self.llm_cheap = LoggerChatModel(
-            ChatOpenAI(
-                model_name="gpt-4o-mini", openai_api_key=openai_api_key, temperature=0.4
+            ChatAnthropic(
+                model_name=LLM_MODEL, api_key=claude_api_key, temperature=0.4
             )
         )
         self.strings = strings
@@ -69,7 +71,7 @@ class LLMResumer:
         } if data is None else data
         output = chain.invoke(input_data)
         return output
-    
+
     def generate_education_section(self, data = None) -> str:
         """
         Generate the education section of the resume.
@@ -85,10 +87,10 @@ class LLMResumer:
 
         prompt = ChatPromptTemplate.from_template(education_prompt_template)
         logger.debug(f"Prompt: {prompt}")
-        
+
         chain = prompt | self.llm_cheap | StrOutputParser()
         logger.debug(f"Chain created: {chain}")
-        
+
         input_data = {
             "education_details": self.resume.education_details
         } if data is None else data
@@ -113,10 +115,10 @@ class LLMResumer:
 
         prompt = ChatPromptTemplate.from_template(work_experience_prompt_template)
         logger.debug(f"Prompt: {prompt}")
-        
+
         chain = prompt | self.llm_cheap | StrOutputParser()
         logger.debug(f"Chain created: {chain}")
-        
+
         input_data = {
             "experience_details": self.resume.experience_details
         } if data is None else data
@@ -141,10 +143,10 @@ class LLMResumer:
 
         prompt = ChatPromptTemplate.from_template(projects_prompt_template)
         logger.debug(f"Prompt: {prompt}")
-        
+
         chain = prompt | self.llm_cheap | StrOutputParser()
         logger.debug(f"Chain created: {chain}")
-        
+
         input_data = {
             "projects": self.resume.projects
         } if data is None else data
@@ -212,7 +214,7 @@ class LLMResumer:
 
         logger.debug("Certifications section generation completed")
         return output
-    
+
     def generate_additional_skills_section(self, data = None) -> str:
         """
         Generate the additional skills section of the resume.
@@ -220,7 +222,7 @@ class LLMResumer:
             str: The generated additional skills section.
         """
         additional_skills_prompt_template = self._preprocess_template_string(self.strings.prompt_additional_skills)
-        
+
         skills = set()
         if self.resume.experience_details:
             for exp in self.resume.experience_details:
@@ -240,7 +242,7 @@ class LLMResumer:
             "skills": skills,
         } if data is None else data
         output = chain.invoke(input_data)
-        
+
         return output
 
     def generate_html_resume(self) -> str:
@@ -273,7 +275,7 @@ class LLMResumer:
             if self.resume.achievements:
                 return self.generate_achievements_section()
             return ""
-        
+
         def certifications_fn():
             if self.resume.certifications:
                 return self.generate_certifications_section()
