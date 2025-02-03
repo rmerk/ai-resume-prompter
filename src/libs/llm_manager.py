@@ -213,7 +213,7 @@ class AIAdapter:
 
 
 class LLMLogger:
-    def __init__(self, llm: Union[OpenAIModel, OllamaModel, ClaudeModel, GeminiModel]):
+    def __init__(self, llm: Union[ClaudeModel]):
         self.llm = llm
         logger.debug(f"LLMLogger successfully initialized with LLM: {llm}")
 
@@ -224,7 +224,7 @@ class LLMLogger:
         logger.debug(f"Parsed reply received: {parsed_reply}")
 
         try:
-            calls_log = os.path.join(Path("data_folder/output"), "open_ai_calls.json")
+            calls_log = os.path.join(Path("data_folder/output"), "anthropic_calls.json")
             logger.debug(f"Logging path determined: {calls_log}")
         except Exception as e:
             logger.error(f"Error determining the log path: {str(e)}")
@@ -325,7 +325,7 @@ class LLMLogger:
 
 
 class LoggerChatModel:
-    def __init__(self, llm: Union[OpenAIModel, OllamaModel, ClaudeModel, GeminiModel]):
+    def __init__(self, llm: Union[ClaudeModel]):
         self.llm = llm
         logger.debug(f"LoggerChatModel successfully initialized with LLM: {llm}")
 
@@ -505,7 +505,7 @@ class GPTAnswerer:
 
     def _clean_llm_output(self, output: str) -> str:
         return output.replace("*", "").replace("#", "").strip()
-    
+
     def summarize_job_description(self, text: str) -> str:
         logger.debug(f"Summarizing job description: {text}")
         prompts.summarize_prompt_template = self._preprocess_template_string(

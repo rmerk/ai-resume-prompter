@@ -21,8 +21,8 @@ log_path = Path(log_folder).resolve()
 logger.add(log_path / "gpt_resum_job_descr.log", rotation="1 day", compression="zip", retention="7 days", level="DEBUG")
 
 class LLMResumeJobDescription(LLMResumer):
-    def __init__(self, openai_api_key, strings):
-        super().__init__(openai_api_key, strings)
+    def __init__(self, api_key, strings):
+        super().__init__(api_key, strings)
 
     def set_job_description_from_text(self, job_description_text) -> None:
         """

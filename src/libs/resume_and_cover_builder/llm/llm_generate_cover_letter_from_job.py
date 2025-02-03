@@ -10,6 +10,7 @@ from ..utils import LoggerChatModel
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_anthropic import ChatAnthropic
+from langchain_voyageai import VoyageAIEmbeddings
 from pathlib import Path
 from dotenv import load_dotenv
 from requests.exceptions import HTTPError as HTTPStatusError
@@ -29,6 +30,7 @@ logger.add(log_path / "gpt_cover_letter_job_descr.log", rotation="1 day", compre
 class LLMCoverLetterJobDescription:
     def __init__(self, claude_api_key, strings):
         self.llm_cheap = LoggerChatModel(ChatAnthropic(model_name=LLM_MODEL, api_key=claude_api_key, temperature=0.4))
+        self.llm_embeddings = VoyageAIEmbeddings(api_key=claude_api_key)
         self.strings = strings
 
     @staticmethod

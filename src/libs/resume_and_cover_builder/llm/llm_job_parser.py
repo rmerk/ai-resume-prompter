@@ -14,6 +14,7 @@ from pathlib import Path
 from langchain_core.prompt_values import StringPromptValue
 from langchain_core.runnables import RunnablePassthrough
 from langchain_text_splitters import TokenTextSplitter
+from langchain_community.embeddings import VoyageAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from lib_resume_builder_AIHawk.config import global_config
 from langchain_community.document_loaders import TextLoader
@@ -39,6 +40,7 @@ class LLMParser:
                 model_name=LLM_MODEL, api_key=claude_api_key, temperature=0.4
             )
         )
+        self.llm_embeddings = VoyageAIEmbeddings(api_key=claude_api_key)  # Initialize embedding
         self.vectorstore = None  # Will be initialized after document loading
 
     @staticmethod

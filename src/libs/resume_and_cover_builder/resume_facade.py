@@ -36,7 +36,7 @@ class ResumeFacade:
         self.resume_generator = resume_generator
         self.resume_generator.set_resume_object(resume_object)
         self.selected_style = None  # Property to store the selected style
-    
+
     def set_driver(self, driver):
          self.driver = driver
 
@@ -67,13 +67,13 @@ class ResumeFacade:
         ]
         return inquirer.prompt(questions)['text']
 
-        
+
     def link_to_job(self, job_url):
         self.driver.get(job_url)
         self.driver.implicitly_wait(10)
         body_element = self.driver.find_element("tag name", "body")
         body_element = body_element.get_attribute("outerHTML")
-        self.llm_job_parser = LLMParser(openai_api_key=global_config.API_KEY)
+        self.llm_job_parser = LLMParser(claude_api_key=global_config.API_KEY)
         self.llm_job_parser.set_body_html(body_element)
 
         self.job = Job()
@@ -103,13 +103,13 @@ class ResumeFacade:
 
         # Generate a unique name using the job URL hash
         suggested_name = hashlib.md5(self.job.link.encode()).hexdigest()[:10]
-        
+
         result = HTML_to_PDF(html_resume, self.driver)
         self.driver.quit()
         return result, suggested_name
-    
-    
-    
+
+
+
     def create_resume_pdf(self) -> tuple[bytes, str]:
         """
         Create a resume PDF using the selected style and the given job description text.
@@ -122,7 +122,7 @@ class ResumeFacade:
         style_path = self.style_manager.get_style_path()
         if style_path is None:
             raise ValueError("You must choose a style before generating the PDF.")
-        
+
         html_resume = self.resume_generator.create_resume(style_path)
         result = HTML_to_PDF(html_resume, self.driver)
         self.driver.quit()
@@ -140,14 +140,14 @@ class ResumeFacade:
         style_path = self.style_manager.get_style_path()
         if style_path is None:
             raise ValueError("You must choose a style before generating the PDF.")
-        
-        
+
+
         cover_letter_html = self.resume_generator.create_cover_letter_job_description(style_path, self.job.description)
 
         # Generate a unique name using the job URL hash
         suggested_name = hashlib.md5(self.job.link.encode()).hexdigest()[:10]
 
-        
+
         result = HTML_to_PDF(cover_letter_html, self.driver)
         self.driver.quit()
         return result, suggested_name

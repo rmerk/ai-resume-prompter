@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List, Dict, Any, Optional, Union
 import yaml
-from pydantic import BaseModel, EmailStr, HttpUrl, Field
+from pydantic.v1 import BaseModel, EmailStr, HttpUrl, Field
 
 
 
